@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjq.programmer.dao.common.ProductMapper">
+  <resultMap id="BaseResultMap" type="com.yjq.programmer.pojo.common.Product">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="info" jdbcType="VARCHAR" property="info" />
+    <result column="product_pic" jdbcType="VARCHAR" property="productPic" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="sell_num" jdbcType="INTEGER" property="sellNum" />
+    <result column="comment_num" jdbcType="INTEGER" property="commentNum" />
+    <result column="category_id" jdbcType="BIGINT" property="categoryId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <resultMap type="com.yjq.programmer.pojo.common.Product"  id="ProductMap">
+    <id column="p_id" jdbcType="BIGINT" property="id" />
+    <result column="p_product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="p_info" jdbcType="VARCHAR" property="info" />
+    <result column="p_product_pic" jdbcType="VARCHAR" property="productPic" />
+    <result column="p_price" jdbcType="DECIMAL" property="price" />
+    <result column="p_stock" jdbcType="INTEGER" property="stock" />
+    <result column="p_sell_num" jdbcType="INTEGER" property="sellNum" />
+    <result column="p_comment_num" jdbcType="INTEGER" property="commentNum" />
+    <result column="p_category_id" jdbcType="BIGINT" property="categoryId" />
+    <result column="p_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="p_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <association property="productCategory" javaType="com.yjq.programmer.pojo.common.ProductCategory">
+      <id column="pc_id" property="id" />
+      <result column="pc_category_name" property="categoryName" />
+      <result column="pc_create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="pc_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </association>
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    id, product_name, info, product_pic, price, stock, sell_num, comment_num, category_id, create_time,
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from mall_product
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByProductIdSet" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from mall_product
+    <if test="productIdSet.size() > 0">
+      where id in
+      <foreach collection="productIdSet" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+  <select id="selectByCategoryIdAndSearchContent" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from mall_product
+    where category_id = #{categoryId,jdbcType=BIGINT}
+    <if test="content != null and content != ''">
+    and product_name like concat('%',#{content,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
+  <select id="selectBySellNumber" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from mall_product order by sell_num desc limit 0,5
+  </select>
+  <select id="selectAll" resultMap="ProductMap">
+    select p.id as p_id, p.product_name as p_product_name, p.info as p_info,p.product_pic as p_product_pic, p.price as p_price,
+    p.stock as p_stock, p.sell_num as p_sell_num, p.comment_num as p_comment_num, p.category_id as p_category_id,
+    p.create_time as p_create_time, p.update_time as p_update_time, pc.id as pc_id, pc.category_name as pc_category_name,
+    pc.create_time as pc_create_time, pc.update_time as pc_update_time
+    from mall_product p, mall_product_category pc
+    where p.category_id = pc.id
+  </select>
+  <select id="selectBySearchContent" parameterType="java.lang.String" resultMap="ProductMap">
+    select p.id as p_id, p.product_name as p_product_name, p.info as p_info, p.product_pic as p_product_pic, p.price as p_price,
+    p.stock as p_stock, p.sell_num as p_sell_num, p.comment_num as p_comment_num, p.category_id as p_category_id,
+    p.create_time as p_create_time, p.update_time as p_update_time, pc.id as pc_id, pc.category_name as pc_category_name,
+    pc.create_time as pc_create_time, pc.update_time as pc_update_time
+    from mall_product p, mall_product_category pc
+    where p.category_id = pc.id and p.product_name like concat('%',#{content,jdbcType=VARCHAR},'%')
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from mall_product
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yjq.programmer.pojo.common.Product">
+    insert into mall_product (id, product_name, info, product_pic,
+      price, stock, sell_num, 
+      comment_num, category_id, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{productName,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}, #{productPic,jdbcType=DECIMAL},
+      #{price,jdbcType=DECIMAL}, #{stock,jdbcType=INTEGER}, #{sellNum,jdbcType=INTEGER}, 
+      #{commentNum,jdbcType=INTEGER}, #{categoryId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjq.programmer.pojo.common.Product">
+    insert into mall_product
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="productName != null">
+        product_name,
+      </if>
+      <if test="info != null">
+        info,
+      </if>
+      <if test="productPic != null">
+        product_pic,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="stock != null">
+        stock,
+      </if>
+      <if test="sellNum != null">
+        sell_num,
+      </if>
+      <if test="commentNum != null">
+        comment_num,
+      </if>
+      <if test="categoryId != null">
+        category_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="productPic != null">
+        #{productPic,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null">
+        #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sellNum != null">
+        #{sellNum,jdbcType=INTEGER},
+      </if>
+      <if test="commentNum != null">
+        #{commentNum,jdbcType=INTEGER},
+      </if>
+      <if test="categoryId != null">
+        #{categoryId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjq.programmer.pojo.common.Product">
+    update mall_product
+    <set>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null">
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="productPic != null">
+        product_pic = #{productPic,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="stock != null">
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+      <if test="sellNum != null">
+        sell_num = #{sellNum,jdbcType=INTEGER},
+      </if>
+      <if test="commentNum != null">
+        comment_num = #{commentNum,jdbcType=INTEGER},
+      </if>
+      <if test="categoryId != null">
+        category_id = #{categoryId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjq.programmer.pojo.common.Product">
+    update mall_product
+    set product_name = #{productName,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR},
+      product_pic = #{productPic,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      stock = #{stock,jdbcType=INTEGER},
+      sell_num = #{sellNum,jdbcType=INTEGER},
+      comment_num = #{commentNum,jdbcType=INTEGER},
+      category_id = #{categoryId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

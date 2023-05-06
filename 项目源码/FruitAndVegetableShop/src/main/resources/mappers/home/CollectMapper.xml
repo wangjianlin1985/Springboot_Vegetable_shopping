@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjq.programmer.dao.home.CollectMapper">
+  <resultMap id="BaseResultMap" type="com.yjq.programmer.pojo.home.Collect">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <resultMap id="CollectMap" type="com.yjq.programmer.pojo.home.Collect">
+    <id column="c_id" jdbcType="BIGINT" property="id" />
+    <result column="c_user_id" jdbcType="BIGINT" property="userId" />
+    <result column="c_product_id" jdbcType="BIGINT" property="productId" />
+    <result column="c_create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="c_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <association property="product" javaType="com.yjq.programmer.pojo.common.Product">
+      <id column="p_id" jdbcType="BIGINT" property="id" />
+      <result column="p_product_name" jdbcType="VARCHAR" property="productName" />
+      <result column="p_info" jdbcType="VARCHAR" property="info" />
+      <result column="p_product_pic" jdbcType="VARCHAR" property="productPic" />
+      <result column="p_price" jdbcType="DECIMAL" property="price" />
+      <result column="p_stock" jdbcType="INTEGER" property="stock" />
+      <result column="p_sell_num" jdbcType="INTEGER" property="sellNum" />
+      <result column="p_comment_num" jdbcType="INTEGER" property="commentNum" />
+      <result column="p_category_id" jdbcType="BIGINT" property="categoryId" />
+      <result column="p_create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="p_update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </association>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, product_id, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from mall_collect
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="findCollectByUserId" parameterType="java.lang.Long" resultMap="CollectMap">
+    select c.id as c_id, c.user_id as c_user_Id, c.product_id as c_product_id, c.create_time as c_create_time, c.update_time as c_update_time,
+    p.id as p_id, p.product_name as p_product_name, p.info as p_info, p.product_pic as p_product_pic, p.price as p_price,
+    p.stock as p_stock, p.sell_num as p_sell_num, p.comment_num as p_comment_num, p.category_id as p_category_id,
+    p.create_time as p_create_time, p.update_time as p_update_time
+    from mall_collect c, mall_product p
+    where user_id = #{userId,jdbcType=BIGINT} and c.product_id = p.id
+  </select>
+  <select id="findCollectByUserIdAndProductId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from mall_collect
+    where user_id = #{userId,jdbcType=BIGINT} and product_id = #{productId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from mall_collect
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yjq.programmer.pojo.home.Collect">
+    insert into mall_collect (id, user_id, product_id, 
+      create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjq.programmer.pojo.home.Collect">
+    insert into mall_collect
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="productId != null">
+        product_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="productId != null">
+        #{productId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjq.programmer.pojo.home.Collect">
+    update mall_collect
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjq.programmer.pojo.home.Collect">
+    update mall_collect
+    set user_id = #{userId,jdbcType=BIGINT},
+      product_id = #{productId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

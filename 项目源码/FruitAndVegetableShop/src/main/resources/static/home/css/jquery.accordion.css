@@ -1,0 +1,59 @@
+*{
+	padding: 0;
+	margin: 0;
+}
+ul li{
+	list-style: none;
+	float: left;
+}
+.accordion{
+	overflow: hidden;
+	height: 522px;
+	margin:0 auto;
+}
+.accordion ul li{
+	background-repeat: no-repeat;
+	float: left;
+	width: 150px;
+	height: 522px;
+	cursor: default;
+}
+.accordion ul li.active{
+	width: 620px;
+}
+.accordion ul .item1{
+	background-image: url(../images/pic1.jpg);
+}
+.accordion ul .item2{
+	background-image: url(../images/pic2.jpg);
+}
+.accordion ul .item3{
+	background-image: url(../images/pic3.jpg);
+}
+.accordion ul .item4{
+	background-image: url(../images/pic4.jpg);
+}
+.accordion ul .item5{
+	background-image: url(../images/pic5.jpg);
+}
+.accordion ul li a{
+	display: block;
+	width: 150px;
+	height: 522px;
+	cursor: default;
+}
+.accordion ul .item1 a{
+	background-image: url(../images/pics1.jpg);
+}
+.accordion ul .item2 a{
+	background-image: url(../images/pics2.jpg);
+}
+.accordion ul .item3 a{
+	background-image: url(../images/pics3.jpg);
+}
+.accordion ul .item4 a{
+	background-image: url(../images/pics4.jpg);
+}
+.accordion ul .item5 a{
+	background-image: url(../images/pics5.jpg);
+}

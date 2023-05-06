@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjq.programmer.dao.admin.AdminMapper">
+  <resultMap id="BaseResultMap" type="com.yjq.programmer.pojo.admin.Admin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="head_pic" jdbcType="VARCHAR" property="headPic" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="mobile" jdbcType="BIGINT" property="mobile" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, role_id, head_pic, name, password, sex, address, mobile, state, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_admin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByNameAndPassword" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_admin
+    where name = #{name,jdbcType=VARCHAR} and 
+    password = #{password,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_admin
+  </select>
+  <select id="selectByRoleId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_admin
+    where role_id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_admin 
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectBySearchName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_admin 
+    where name like '%${name,jdbcType=VARCHAR}%'
+  </select>
+  <select id="getTotal"  resultType="Integer">
+		select count(*) from bms_admin 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bms_admin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yjq.programmer.pojo.admin.Admin">
+    insert into bms_admin (id, role_id, head_pic, 
+      name, password, sex, address, 
+      mobile, state)
+    values (#{id,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}, #{headPic,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=BIGINT}, #{state,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjq.programmer.pojo.admin.Admin" useGeneratedKeys="true" keyProperty="id">
+    insert into bms_admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="headPic != null">
+        head_pic,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="state != null">
+        state
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="headPic != null">
+        #{headPic,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=BIGINT},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjq.programmer.pojo.admin.Admin">
+    update bms_admin
+    <set>
+      <if test="roleId != null">
+        role_id = #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="headPic != null">
+        head_pic = #{headPic,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=BIGINT},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeySetSelective">
+    update bms_admin
+    <set>
+      <if test="admin.roleId != null">
+        role_id = #{admin.roleId,jdbcType=INTEGER},
+      </if>
+      <if test="admin.headPic != null">
+        head_pic = #{admin.headPic,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.name != null">
+        name = #{admin.name,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.password != null">
+        password = #{admin.password,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.sex != null">
+        sex = #{admin.sex,jdbcType=INTEGER},
+      </if>
+      <if test="admin.address != null">
+        address = #{admin.address,jdbcType=VARCHAR},
+      </if>
+      <if test="admin.mobile != null">
+        mobile = #{admin.mobile,jdbcType=BIGINT},
+      </if>
+      <if test="admin.state != null">
+        state = #{admin.state,jdbcType=INTEGER},
+      </if>
+    </set>
+    <where>
+      <if test="adminIdSet.size() > 0">
+        id in
+        <foreach collection="adminIdSet" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+    </where>
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjq.programmer.pojo.admin.Admin">
+    update bms_admin
+    set role_id = #{roleId,jdbcType=INTEGER},
+      head_pic = #{headPic,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=BIGINT},
+      state = #{state,jdbcType=INTEGER} 
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

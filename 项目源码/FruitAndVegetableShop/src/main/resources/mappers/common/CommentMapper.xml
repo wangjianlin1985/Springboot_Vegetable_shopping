@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjq.programmer.dao.common.CommentMapper">
+  <resultMap id="BaseResultMap" type="com.yjq.programmer.pojo.common.Comment">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap type="com.yjq.programmer.pojo.common.Comment"  id="CommentMap">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <association property="user" javaType="com.yjq.programmer.pojo.common.User">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="phone" jdbcType="VARCHAR" property="phone" />
+      <result column="head_pic" jdbcType="VARCHAR" property="headPic" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </association>
+    <association property="product" javaType="com.yjq.programmer.pojo.common.Product">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="product_name" jdbcType="VARCHAR" property="productName" />
+      <result column="info" jdbcType="VARCHAR" property="info" />
+      <result column="product_pic" jdbcType="VARCHAR" property="productPic" />
+      <result column="price" jdbcType="DECIMAL" property="price" />
+      <result column="stock" jdbcType="INTEGER" property="stock" />
+      <result column="sell_num" jdbcType="INTEGER" property="sellNum" />
+      <result column="comment_num" jdbcType="INTEGER" property="commentNum" />
+      <result column="category_id" jdbcType="BIGINT" property="categoryId" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, product_id, user_id, content, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from mall_comment
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectBySearchContent" parameterType="java.lang.String" resultMap="CommentMap">
+   select c.id, c.user_id, c.product_id, c.content, c.create_time, c.update_time,
+    u.id, u.username, u.password, u.email, u.phone, u.head_pic, u.create_time, u.update_time,
+    p.id, p.product_name, p.info, p.product_pic, p.price, p.stock, p.sell_num, p.comment_num,
+    p.category_id, p.create_time, p.update_time
+    from mall_comment c, mall_user u, mall_product p
+    where c.user_id = u.id and c.product_id = p.id and content like concat('%',#{content,jdbcType=VARCHAR},'%')
+    order by c.create_time desc
+  </select>
+  <select id="selectAll" resultMap="CommentMap">
+    select c.id, c.user_id, c.product_id, c.content, c.create_time, c.update_time,
+    u.id, u.username, u.password, u.email, u.phone, u.head_pic, u.create_time, u.update_time,
+    p.id, p.product_name, p.info, p.product_pic, p.price, p.stock, p.sell_num, p.comment_num,
+    p.category_id, p.create_time, p.update_time
+    from mall_comment c, mall_user u, mall_product p
+    where c.user_id = u.id and c.product_id = p.id
+    order by c.create_time desc
+  </select>
+  <select id="selectByProductId" parameterType="java.lang.Long" resultMap="CommentMap">
+    select c.id, c.user_id, c.product_id, c.content, c.create_time, c.update_time,
+    u.id, u.username, u.password, u.email, u.phone, u.head_pic, u.create_time, u.update_time,
+    p.id, p.product_name, p.info, p.product_pic, p.price, p.stock, p.sell_num, p.comment_num,
+    p.category_id, p.create_time, p.update_time
+    from mall_comment c, mall_user u, mall_product p
+    where c.product_id = #{productId,jdbcType=BIGINT} and c.user_id = u.id and c.product_id = p.id
+    order by c.create_time desc
+  </select>
+  <select id="selectByUserId" parameterType="java.lang.Long" resultMap="CommentMap">
+    select c.id, c.user_id, c.product_id, c.content, c.create_time, c.update_time,
+    u.id, u.username, u.password, u.email, u.phone, u.head_pic, u.create_time, u.update_time,
+    p.id, p.product_name, p.info, p.product_pic, p.price, p.stock, p.sell_num, p.comment_num,
+    p.category_id, p.create_time, p.update_time
+    from mall_comment c, mall_user u, mall_product p
+    where c.user_id = #{userId,jdbcType=BIGINT} and c.user_id = u.id and c.product_id = p.id
+    order by c.create_time desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from mall_comment
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yjq.programmer.pojo.common.Comment">
+    insert into mall_comment (id, product_id, user_id, 
+      content, create_time, update_time
+      )
+    values (#{id,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjq.programmer.pojo.common.Comment">
+    insert into mall_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="productId != null">
+        product_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="productId != null">
+        #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjq.programmer.pojo.common.Comment">
+    update mall_comment
+    <set>
+      <if test="productId != null">
+        product_id = #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjq.programmer.pojo.common.Comment">
+    update mall_comment
+    set product_id = #{productId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      content = #{content,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

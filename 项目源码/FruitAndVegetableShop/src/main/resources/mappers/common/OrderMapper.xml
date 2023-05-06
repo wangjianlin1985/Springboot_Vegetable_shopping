@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjq.programmer.dao.common.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.yjq.programmer.pojo.common.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="BIGINT" property="orderNo" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="address_id" jdbcType="BIGINT" property="addressId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <!-- 一对一查询 -->
+  <resultMap id="OrderMapByOrderId" type="com.yjq.programmer.pojo.common.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="BIGINT" property="orderNo" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="address_id" jdbcType="BIGINT" property="addressId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <association property="user" javaType="com.yjq.programmer.pojo.common.User">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="username" jdbcType="VARCHAR" property="username" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="phone" jdbcType="VARCHAR" property="phone" />
+      <result column="head_pic" jdbcType="VARCHAR" property="headPic" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </association>
+    <association property="address" javaType="com.yjq.programmer.pojo.home.Address">
+      <id column="id" jdbcType="BIGINT" property="id" />
+      <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+      <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
+      <result column="receiver_phone" jdbcType="VARCHAR" property="receiverPhone" />
+      <result column="user_id" jdbcType="BIGINT" property="userId" />
+      <result column="first_selected" jdbcType="INTEGER" property="firstSelected" />
+      <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+      <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </association>
+  </resultMap>
+  <!-- 一对多查询 -->
+  <resultMap id="OrderMap" type="com.yjq.programmer.pojo.common.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="BIGINT" property="orderNo" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="address_id" jdbcType="BIGINT" property="addressId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <collection property="orderItemList" ofType="com.yjq.programmer.pojo.common.OrderItem" select="getOrderItemByOrderId" javaType="java.util.List"  column="{orderId=id}">
+    </collection>
+  </resultMap>
+  <!-- 一对多嵌套子查询 -->
+  <resultMap id="OrderItemMap" type="com.yjq.programmer.pojo.common.OrderItem">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="product_id" jdbcType="BIGINT" property="productId" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="product_pic" jdbcType="VARCHAR" property="productPic" />
+    <result column="product_price" jdbcType="DECIMAL" property="productPrice" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_no, user_id, state, total_price, address_id, remark, is_deleted, create_time, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="OrderMapByOrderId">
+    select o.id, o.order_no, o.user_id, o.state, o.total_price,
+    o.address_id, o.remark, o.is_deleted, o.create_time, o.update_time,
+    u.id, u.username, u.password, u.email, u.phone, u.head_pic, u.create_time, u.update_time,
+    a.id, a.receiver_name, a.receiver_address, a.receiver_phone, a.user_id, a.first_selected, a.create_time, a.update_time
+    from mall_order o, mall_address a, mall_user u
+    where o.id = #{id,jdbcType=BIGINT} and o.user_id = u.id and o.address_id = a.id
+  </select>
+  <select id="selectByOrderStateAndUserIdAndIsDeleted" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from mall_order
+    where state = #{state,jdbcType=INTEGER} and user_id = #{userId,jdbcType=BIGINT} and is_deleted = #{isDeleted,jdbcType=INTEGER}
+  </select>
+  <select id="selectByUserIdAndIsDeleted" resultMap="OrderMap">
+    select o.id, o.order_no, o.user_id, o.state, o.total_price,
+    o.address_id, o.remark, o.is_deleted, o.create_time, o.update_time
+    from mall_order o
+    where o.user_id = #{userId,jdbcType=BIGINT} and o.is_deleted = #{isDeleted,jdbcType=INTEGER}
+    order by o.create_time desc
+  </select>
+  <select id="getOrderItemByOrderId" resultMap="OrderItemMap">
+    select oi.id, oi.order_id, oi.product_id, oi.product_name, oi.product_pic,
+    oi.product_price, oi.quantity, oi.total_price, oi.create_time, oi.update_time
+    from mall_order_item oi
+    where oi.order_id = #{orderId}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select o.id, o.order_no, o.user_id, o.state, o.total_price,
+    o.address_id, o.remark, o.is_deleted, o.create_time, o.update_time
+    from mall_order o order by o.create_time desc
+  </select>
+  <select id="selectBySearchContent" resultMap="BaseResultMap">
+    select o.id, o.order_no, o.user_id, o.state, o.total_price,
+    o.address_id, o.remark, o.is_deleted, o.create_time, o.update_time
+    from mall_order o
+    where order_no = #{orderNo,jdbcType=BIGINT}
+  </select>
+  <select id="selectByOrderIdAndUserId" resultMap="OrderMap">
+    select o.id, o.order_no, o.user_id, o.state, o.total_price,
+    o.address_id, o.remark, o.is_deleted, o.create_time, o.update_time
+    from mall_order o
+    where o.id = #{orderId,jdbcType=BIGINT} and o.user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <select id="getOrderByDay" resultType="com.yjq.programmer.pojo.common.Order">
+    select * from mall_order o
+    where TO_DAYS(o.create_time) = TO_DAYS(NOW())
+  </select>
+  <select id="getOrderByWeek" resultType="com.yjq.programmer.pojo.common.Order">
+    select * from mall_order o
+    where YEARWEEK(date_format(o.create_time,'%Y-%m-%d'),1) = YEARWEEK(now(),1);
+  </select>
+  <select id="getOrderByMonth" resultType="com.yjq.programmer.pojo.common.Order">
+    select * from mall_order o
+    where DATE_FORMAT( o.create_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from mall_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yjq.programmer.pojo.common.Order">
+    insert into mall_order (id, order_no, user_id, 
+      state, total_price, address_id, 
+      remark, is_deleted, create_time, 
+      update_time)
+    values (#{id,jdbcType=BIGINT}, #{orderNo,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{state,jdbcType=INTEGER}, #{totalPrice,jdbcType=DECIMAL}, #{addressId,jdbcType=BIGINT}, 
+      #{remark,jdbcType=VARCHAR}, #{isDeleted,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjq.programmer.pojo.common.Order" useGeneratedKeys="true" keyProperty="id">
+    insert into mall_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="orderNo != null">
+        order_no,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="totalPrice != null">
+        total_price,
+      </if>
+      <if test="addressId != null">
+        address_id,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="totalPrice != null">
+        #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="addressId != null">
+        #{addressId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjq.programmer.pojo.common.Order">
+    update mall_order
+    <set>
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="totalPrice != null">
+        total_price = #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="addressId != null">
+        address_id = #{addressId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjq.programmer.pojo.common.Order">
+    update mall_order
+    set order_no = #{orderNo,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      state = #{state,jdbcType=INTEGER},
+      total_price = #{totalPrice,jdbcType=DECIMAL},
+      address_id = #{addressId,jdbcType=BIGINT},
+      remark = #{remark,jdbcType=VARCHAR},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateStateByOrderId">
+    update mall_order
+    set state = #{state,jdbcType=INTEGER}
+    where id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateIsDeletedByOrderId">
+    update mall_order
+    set is_deleted = #{isDeleted,jdbcType=INTEGER}
+    where id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>

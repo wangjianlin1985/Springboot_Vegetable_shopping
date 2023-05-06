@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjq.programmer.dao.admin.MailMapper">
+  <resultMap id="BaseResultMap" type="com.yjq.programmer.pojo.admin.Mail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
+    <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="attachment_one" jdbcType="INTEGER" property="attachmentOne" />
+    <result column="attachment_two" jdbcType="INTEGER" property="attachmentTwo" />
+    <result column="attachment_three" jdbcType="INTEGER" property="attachmentThree" />
+    <result column="delete_state" jdbcType="INTEGER" property="deleteState" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yjq.programmer.pojo.admin.Mail">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sender_id, receiver_id, title, attachment_one, attachment_two, attachment_three, delete_state, 
+    create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bms_mail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByReceiverIdAndDeleteState"  resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bms_mail
+    where receiver_id = #{id,jdbcType=INTEGER} 
+    and delete_state &lt;&gt; #{deleteState,jdbcType=INTEGER}   
+    order by create_time desc
+  </select>
+  <select id="selectBySenderIdAndDeleteState" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bms_mail
+    where sender_id = #{id,jdbcType=INTEGER} 
+    and delete_state &lt;&gt; #{deleteState,jdbcType=INTEGER} 
+    order by create_time desc
+  </select>
+  <select id="selectBySearchTitleAndReceiverIdAndDeleteState" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bms_mail 
+    where  title like '%${title}%' and 
+    receiver_id = #{id,jdbcType=INTEGER} 
+    and delete_state &lt;&gt; #{deleteState,jdbcType=INTEGER} 
+    order by create_time desc
+  </select>
+  <select id="selectBySearchTitleAndSenderIdAndDeleteState" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bms_mail 
+    where  title like '%${title}%' and 
+    sender_id = #{id,jdbcType=INTEGER} 
+    and delete_state &lt;&gt; #{deleteState,jdbcType=INTEGER} 
+    order by create_time desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bms_mail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yjq.programmer.pojo.admin.Mail">
+    insert into bms_mail (id, sender_id, receiver_id, 
+      title, attachment_one, attachment_two, 
+      attachment_three, create_time, update_time, 
+      content)
+    values (#{id,jdbcType=INTEGER}, #{senderId,jdbcType=INTEGER}, #{receiverId,jdbcType=INTEGER}, 
+      #{title,jdbcType=VARCHAR}, #{attachmentOne,jdbcType=INTEGER}, #{attachmentTwo,jdbcType=INTEGER}, 
+      #{attachmentThree,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="batchInsert" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+    insert into bms_mail (sender_id,receiver_id,title,content,attachment_one,attachment_two,attachment_three)
+    values
+    <foreach collection="mailList" index="index" item="item" separator=",">
+      (
+      #{item.senderId},
+      #{item.receiverId},
+      #{item.title},
+      #{item.content},
+      #{item.attachmentOne},
+      #{item.attachmentTwo},
+      #{item.attachmentThree}
+      )
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjq.programmer.pojo.admin.Mail">
+    insert into bms_mail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="senderId != null">
+        sender_id,
+      </if>
+      <if test="receiverId != null">
+        receiver_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="attachmentOne != null">
+        attachment_one,
+      </if>
+      <if test="attachmentTwo != null">
+        attachment_two,
+      </if>
+      <if test="attachmentThree != null">
+        attachment_three,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="senderId != null">
+        #{senderId,jdbcType=INTEGER},
+      </if>
+      <if test="receiverId != null">
+        #{receiverId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="attachmentOne != null">
+        #{attachmentOne,jdbcType=INTEGER},
+      </if>
+      <if test="attachmentTwo != null">
+        #{attachmentTwo,jdbcType=INTEGER},
+      </if>
+      <if test="attachmentThree != null">
+        #{attachmentThree,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="getTotal" resultType="Integer">
+		select count(*) from bms_mail 
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjq.programmer.pojo.admin.Mail">
+    update bms_mail
+    <set>
+      <if test="senderId != null">
+        sender_id = #{senderId,jdbcType=INTEGER},
+      </if>
+      <if test="receiverId != null">
+        receiver_id = #{receiverId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="attachmentOne != null">
+        attachment_one = #{attachmentOne,jdbcType=INTEGER},
+      </if>
+      <if test="attachmentTwo != null">
+        attachment_two = #{attachmentTwo,jdbcType=INTEGER},
+      </if>
+      <if test="attachmentThree != null">
+        attachment_three = #{attachmentThree,jdbcType=INTEGER},
+      </if>
+      <if test="deleteState != null">
+        delete_state = #{deleteState,jdbcType=INTEGER},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yjq.programmer.pojo.admin.Mail">
+    update bms_mail
+    set sender_id = #{senderId,jdbcType=INTEGER},
+      receiver_id = #{receiverId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      attachment_one = #{attachmentOne,jdbcType=INTEGER},
+      attachment_two = #{attachmentTwo,jdbcType=INTEGER},
+      attachment_three = #{attachmentThree,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjq.programmer.pojo.admin.Mail">
+    update bms_mail
+    set sender_id = #{senderId,jdbcType=INTEGER},
+      receiver_id = #{receiverId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      attachment_one = #{attachmentOne,jdbcType=INTEGER},
+      attachment_two = #{attachmentTwo,jdbcType=INTEGER},
+      attachment_three = #{attachmentThree,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
